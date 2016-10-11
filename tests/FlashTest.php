@@ -9,10 +9,14 @@ class FlashTest extends PHPUnit_Framework_TestCase {
 
     protected $flash;
 
+    protected $log;
+
 	public function setUp()
 	{
         $this->session = m::mock('Laracasts\Flash\SessionStore');
-        $this->flash = new FlashNotifier($this->session);
+        $this->log = m::mock('Illuminate\Contracts\Logging\Log');
+        $this->log->shouldReceive('debug');
+        $this->flash = new FlashNotifier($this->session, $this->log);
 	}
 
 	/** @test */
@@ -21,7 +25,6 @@ class FlashTest extends PHPUnit_Framework_TestCase {
         $this->session->shouldReceive('flash')->with('flash_notification.message', 'Welcome Aboard');
         $this->session->shouldReceive('flash')->with('flash_notification.title', 'Notice');
         $this->session->shouldReceive('flash')->with('flash_notification.level', 'info');
-
         $this->flash->message('Welcome Aboard');
 	}
 
@@ -95,6 +98,15 @@ class FlashTest extends PHPUnit_Framework_TestCase {
         $this->session->shouldReceive('flash')->with('flash_notification.overlay', true);
 
         $this->flash->overlay('Overlay Message','Notice','danger');
+    }
+
+    public function it_write_the_message_to_the_log()
+    {
+        $this->session->shouldReceive('flash')->with('flash_notification.message', 'Welcome Aboard');
+        $this->session->shouldReceive('flash')->with('flash_notification.title', 'Notice');
+        $this->session->shouldReceive('flash')->with('flash_notification.level', 'success');
+
+        $this->log->shouldReceive('debug')->with('Flashed message: success - Welcome Aboard');
     }
 
 }
