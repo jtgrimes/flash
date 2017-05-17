@@ -14,20 +14,13 @@ class FlashNotifier
     private $session;
 
     /**
-     * @var Log Log
-     */
-    private $log;
-
-    /**
      * Create a new flash notifier instance.
      *
      * @param SessionStore $session
-     * @param Log $log
      */
-    function __construct(SessionStore $session, Log $log)
+    function __construct(SessionStore $session)
     {
         $this->session = $session;
-        $this->log = $log;
     }
 
     /**
@@ -111,7 +104,7 @@ class FlashNotifier
     {
         $this->session->flash('flash_notification.message', $message);
         $this->session->flash('flash_notification.level', $level);
-        $this->log->debug("Flashed message: $level - $message");
+        \Log::debug("Flashed message: $level - $message");
 
         return $this;
     }
